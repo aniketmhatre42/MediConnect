@@ -1,0 +1,51 @@
+.facial-auth-container {
+  position: relative;
+  width: 720px;
+  margin: 0 auto;
+}
+
+.face-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.auth-success {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.error {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f44336;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.auth-warning {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #ff9800;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+}

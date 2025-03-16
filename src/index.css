@@ -1,0 +1,74 @@
+/* src/index.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+body, #root {
+  min-height: 100vh;
+  position: relative;
+  box-sizing: border-box;
+}
+
+nav {
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+}
+
+nav ul li {
+  display: inline;
+}
+
+h1, h2, p {
+  text-align: center;
+}
+
+.bg-gradient-primary-radial{
+  background-color: #f0f0f0 !important;
+  background-image: none !important;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Fix for the extended scroll issue */
+#root {
+  display: block; /* Change from flex to block */
+  box-sizing: border-box;
+  min-height: auto; /* Remove min-height constraint */
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+/* Remove constraints that make the layout unscrollable */
+html, body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Remove overflow-x: hidden to allow scrolling */
+  /* Remove scrollbar hiding to allow normal scrolling */
+}

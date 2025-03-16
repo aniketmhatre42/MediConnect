@@ -1,0 +1,18 @@
+.generate-pdf-btn {
+    background-color: teal;
+    color: #fff;
+    border: none;
+    padding: 20px 30px; 
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 30px;
+    width: auto; 
+    max-width: 300px; 
+    text-align: center; 
+    margin: 20px auto; 
+    display: block; 
+}
+
+.generate-pdf-btn:hover {
+    background-color: #06575b;
+}

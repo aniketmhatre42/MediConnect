@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); /* Google Font */
+
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 110vh; /* Increased height */
+    background-color: #e6f7ff; /* Softer, interactive background color */
+    font-family: 'Poppins', sans-serif; /* Applied the new font */
+    padding: 20px; /* Added some padding for better spacing */
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-weight: 600; /* Bold header */
+    color: #333;
+    font-size: 28px; /* Increased font size for the heading */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center aligned form inputs */
+    width: 100%;
+    max-width: 300px; /* Max width for better responsiveness */
+}
+
+label {
+    margin: 5px 0;
+    color: #333;
+    font-weight: 500;
+}
+
+input {
+    padding: 12px; /* Increased padding for better interactivity */
+    margin-bottom: 15px;
+    width: 100%; /* Full width for better responsiveness */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s ease; /* Smooth transition for input border */
+}
+
+input:focus {
+    border-color: #4caf50; /* Interactive border on focus */
+    outline: none;
+}
+
+button {
+    padding: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover and click effects */
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: translateY(-3px); /* Small elevation effect on hover */
+}
+
+button:active {
+    transform: translateY(0); /* Reset elevation on click */
+}
