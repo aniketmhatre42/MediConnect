@@ -68,5 +68,59 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-"# Mediconnect" 
-"# Mediconnect" 
+
+# MediConnect Face Authentication System
+
+## Face Data Storage
+
+The face authentication system in MediConnect stores face data in two ways:
+
+1. **Local Storage (Browser)**:
+   - Face descriptors are stored in browser's localStorage under the key `face_descriptors`
+   - User account data is stored under the key `user_data`
+   - This data persists even when the browser is closed, but is specific to the device/browser being used
+   - To view this data: Open browser DevTools > Application tab > Storage > Local Storage
+
+2. **Firebase (optional)**:
+   - When using Firebase integration, face descriptors are stored in Firestore database
+   - The collection used is `faceDescriptors` with each document ID matching the user ID
+   - Each document contains the face descriptor data as an array of floating point numbers
+
+### Data Structure
+
+**1. User Data (in localStorage):**
+```json
+[
+  {
+    "userId": "user_1234567890",
+    "email": "user@example.com",
+    "username": "username",
+    "password": "password123", 
+    "createdAt": "2023-04-16T10:30:00.000Z",
+    "hasFaceAuth": true
+  },
+  // More users...
+]
+```
+
+**2. Face Descriptors (in localStorage):**
+```json
+[
+  {
+    "userId": "user_1234567890",
+    "descriptor": [0.1, 0.2, -0.3, ...], // 128-dimension face descriptor
+    "timestamp": "2023-04-16T10:30:00.000Z"
+  },
+  // More descriptors...
+]
+```
+
+## Troubleshooting Camera Feed Issues
+
+If the camera feed is not displaying during registration:
+
+1. **Check Browser Permissions**: Ensure the browser has permission to access the camera
+2. **Use Supported Browser**: Chrome, Firefox, or Edge are recommended
+3. **Enable HTTPS**: Camera access works more reliably on HTTPS connections
+4. **Check Console**: Open browser DevTools to see any error messages
+5. **Clear Cache**: Try clearing browser cache and local storage

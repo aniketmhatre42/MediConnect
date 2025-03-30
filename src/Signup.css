@@ -1,70 +1,638 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); /* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Base styles */
 .signup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 110vh; /* Increased height */
-    background-color: #e6f7ff; /* Softer, interactive background color */
-    font-family: 'Poppins', sans-serif; /* Applied the new font */
-    padding: 20px; /* Added some padding for better spacing */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #f0f4ff 0%, #e4f1ff 100%);
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
-h2 {
-    margin-bottom: 20px;
-    font-weight: 600; /* Bold header */
-    color: #333;
-    font-size: 28px; /* Increased font size for the heading */
+.signup-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 30, 90, 0.1);
+  width: 100%;
+  max-width: 500px;
+  animation: fadeIn 0.6s ease-out;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center aligned form inputs */
+/* Signup header */
+.signup-title {
+  color: #1a3a5f;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+/* Face icon styles - match Login screen */
+.face-icon-container {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #e0f2f1, #b2ebf2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 128, 128, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.face-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #008080;
+  position: relative;
+}
+
+.face-icon:before, 
+.face-icon:after {
+  content: '';
+  position: absolute;
+  background-color: #008080;
+}
+
+.face-icon:before {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 20px;
+  left: 15px;
+  box-shadow: 20px 0 0 0 #008080;
+  background-color: #fff;
+}
+
+.face-icon:after {
+  width: 30px;
+  height: 10px;
+  border-radius: 0 0 15px 15px;
+  bottom: 15px;
+  left: 15px;
+}
+
+.step-container {
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  padding: 1rem 0;
+}
+
+/* Username exists warning */
+.username-exists-warning {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid #ffc107;
+  color: #856404;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+/* Update confirmation dialog */
+.update-confirmation {
+  background-color: rgba(25, 118, 210, 0.05);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  border: 1px solid rgba(25, 118, 210, 0.2);
+  text-align: left;
+}
+
+.update-confirmation p {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.confirmation-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.confirm-btn {
+  flex: 2;
+  padding: 10px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  flex: 1;
+  padding: 10px;
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-btn:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Next button styling - match login button */
+.next-button {
+  background: linear-gradient(135deg, #008080, #20b2aa);
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 128, 128, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.next-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 128, 128, 0.4);
+}
+
+.next-button:disabled {
+  background: linear-gradient(135deg, #b2dfdb, #80cbc4);
+  cursor: not-allowed;
+}
+
+.step-description {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Input styling */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e1e1e1;
+  border-radius: 30px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.input-group input:focus {
+  border-color: #008080;
+  box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+  outline: none;
+}
+
+/* Alternative auth section - match login */
+.alternative-auth {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.alternative-auth p {
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+
+.login-link {
+  display: inline-block;
+  color: #008080;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: 2px solid #008080;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.login-link:hover {
+  background-color: #008080;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 128, 128, 0.2);
+}
+
+/* Error message */
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border-left: 4px solid #d32f2f;
+  text-align: left;
+}
+
+/* Registration progress styles */
+.registration-progress {
+  margin-bottom: 2rem;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+.step {
+  background: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #666;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 2;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: #008080;
+  color: white;
+  border-color: #008080;
+  transform: scale(1.1);
+}
+
+.step.completed {
+  background: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+/* Processing and completion containers */
+.processing-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 128, 128, 0.1);
+  border-top: 4px solid #008080;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 1s linear infinite;
+}
+
+.completion-container {
+  text-align: center;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  position: relative;
+}
+
+.success-icon::before {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 45px;
+}
+
+.storage-info {
+  margin: 2rem auto;
+  max-width: 400px;
+  text-align: left;
+  background: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.storage-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.storage-info li {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.info-tip {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.info-tip p {
+  text-align: center;
+  color: #666;
+}
+
+.redirect-message {
+  margin-top: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Keep all existing face positioning guide styles */
+.face-position-guide {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-left: 4px solid #2196f3;
+}
+
+.face-position-guide h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: #2196f3;
+}
+
+.face-guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.face-guide-list li {
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.face-guide-list li.success {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.check-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.success .check-icon {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Enhanced register button styles */
+.register-button {
+  flex: 2;
+  padding: 14px 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  color: #777;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.register-button.register-ready {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  animation: pulse-success 2s infinite;
+}
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.register-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.register-icon {
+  margin-left: 10px;
+  font-size: 1.2rem;
+  display: inline-block;
+  animation: bounceIn 0.5s ease;
+}
+
+/* Face detection success overlay */
+.face-detected-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(76, 175, 80, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: slideInRight 0.5s ease-out;
+  z-index: 10;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.face-detected-icon {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  position: relative;
+}
+
+.face-detected-icon:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 5px;
+  border-left: 2px solid #4caf50;
+  border-bottom: 2px solid #4caf50;
+  transform: translate(-50%, -60%) rotate(-45deg);
+}
+
+/* Animation for face detection success */
+@keyframes slideInRight {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-success {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* Improved camera controls to better space the buttons */
+.camera-controls {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 14px 15px;
+  background-color: #f5f5f5;
+  color: #555;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 128, 128, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(0, 128, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 128, 128, 0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .signup-card {
+    padding: 1.5rem;
+    margin: 1rem;
+    max-width: 90%;
+  }
+
+  .signup-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .face-icon-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .next-button {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* Camera container size consistency */
+.camera-container {
+  position: relative;
+  width: 100%;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background-color: #000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  max-height: 360px; /* Add max height for consistency */
+}
+
+/* Responsive consistency with Login */
+@media (max-width: 768px) {
+  .signup-card {
     width: 100%;
-    max-width: 300px; /* Max width for better responsiveness */
-}
-
-label {
-    margin: 5px 0;
-    color: #333;
-    font-weight: 500;
-}
-
-input {
-    padding: 12px; /* Increased padding for better interactivity */
-    margin-bottom: 15px;
-    width: 100%; /* Full width for better responsiveness */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: border 0.3s ease; /* Smooth transition for input border */
-}
-
-input:focus {
-    border-color: #4caf50; /* Interactive border on focus */
-    outline: none;
-}
-
-button {
-    padding: 12px;
-    margin-top: 10px;
-    cursor: pointer;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 100%;
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover and click effects */
-}
-
-button:hover {
-    background-color: #45a049;
-    transform: translateY(-3px); /* Small elevation effect on hover */
-}
-
-button:active {
-    transform: translateY(0); /* Reset elevation on click */
+    max-width: 90%;
+    padding: 1.8rem;
+    margin: 1rem auto;
+  }
 }

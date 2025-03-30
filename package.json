@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "face-api.js": "^0.22.2",
+    "file-saver": "^2.0.5",
     "firebase": "^10.14.1",
     "firebaseui": "^6.1.0",
     "ionicons": "^7.4.0",

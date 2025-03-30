@@ -5,18 +5,19 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  background: linear-gradient(120deg, #f0f4ff 0%, #e4f1ff 100%);
   padding: 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-card {
   background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 30, 90, 0.1);
   width: 100%;
-  max-width: 400px;
-  animation: slideUp 0.5s ease-out;
+  max-width: 500px; /* Increased from 400px to match signup card */
+  animation: fadeIn 0.6s ease-out;
 }
 
 .login-card h2 {
@@ -156,5 +157,801 @@
   background-color: #808080;
   cursor: not-allowed;
   transform: none;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background-color: #000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  max-height: 360px; /* Add max height for consistency */
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.scanning-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.scanning-animation {
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4caf50, transparent);
+  margin-bottom: 1rem;
+  animation: scanning 1.5s linear infinite;
+}
+
+.scan-status {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 300px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.auth-instruction {
+  text-align: center;
+  color: #666;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.auth-success-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: fadeIn 0.5s ease;
+}
+
+.success-checkmark {
+  width: 80px;
+  height: 80px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-checkmark::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 20px;
+  border-left: 4px solid white;
+  border-bottom: 4px solid white;
+  transform: translate(-9%, -15%) rotate(-45deg); /* Fixed positioning of the checkmark */
+}
+
+.redirect-message {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.face-auth-btn {
+  background: teal;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.face-auth-btn:hover {
+  background: #006666;
+  transform: translateY(-2px);
+}
+
+.alternative-auth {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.register-btn {
+  background: #f0f0f0;
+  color: #333;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: auto;
+  min-width: 200px;
+  margin-top: 0.5rem;
+}
+
+.register-btn:hover {
+  background: #e0e0e0;
+}
+
+@keyframes scanning {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(100px);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .login-card, .signup-card {
+    width: 100%;
+    max-width: 90%;
+    padding: 1.8rem;
+    margin: 1rem auto;
+  }
+
+  .face-auth-btn {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Login methods selector */
+.login-methods {
+  display: flex;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.method-btn {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.method-btn.active {
+  background-color: teal;
+  color: white;
+}
+
+.method-btn:hover:not(.active) {
+  background-color: #e0e0e0;
+}
+
+/* Face auth container */
+.face-auth-container {
+  animation: fadeIn 0.4s ease;
+}
+
+.face-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+}
+
+.scanning-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+.scanning-animation {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1.5rem;
+}
+
+.scanning-animation:before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #4CAF50;
+  animation: spin 1s linear infinite;
+}
+
+.face-auth-instructions {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background-color: rgba(0, 128, 128, 0.1);
+  border-radius: 8px;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.login-form {
+  animation: fadeIn 0.4s ease;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: teal;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.login-btn:hover:not(:disabled) {
+  background-color: #006666;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 128, 128, 0.2);
+}
+
+.login-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border-left: 4px solid #d32f2f;
+}
+
+/* Enhance the responsive design */
+@media (max-width: 768px) {
+  .login-card {
+    width: 90%;
+    padding: 1.5rem;
+  }
+  
+  .login-methods {
+    flex-direction: column;
+  }
+  
+  .method-btn {
+    padding: 0.8rem;
+  }
+  
+  .video-container {
+    min-height: 200px;
+  }
+  
+  .scanning-animation {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .alternative-auth {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+}
+
+/* Face position guide - same style as signup */
+.face-position-guide {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-left: 4px solid #2196f3;
+}
+
+.face-position-guide h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: #2196f3;
+}
+
+.face-guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.face-guide-list li {
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.face-guide-list li.success {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.check-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.success .check-icon {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Enhanced video container design */
+.face-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.face-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Status message at the bottom of video */
+.scan-message {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  z-index: 5;
+}
+
+/* Detection progress bar */
+.detection-progress-container {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.detection-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2196f3, #4caf50);
+  transition: width 0.3s ease;
+}
+
+/* Face position feedback */
+.face-position-feedback {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 4px;
+  margin: 0 10px;
+}
+
+.face-position-feedback.too_close {
+  background-color: rgba(244, 67, 54, 0.8);
+}
+
+.face-position-feedback.too_far {
+  background-color: rgba(255, 152, 0, 0.8);
+}
+
+.face-position-feedback.good {
+  background-color: rgba(76, 175, 80, 0.8);
+}
+
+/* Authentication success overlay */
+.auth-success-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  animation: fadeIn 0.5s ease-out;
+  z-index: 10;
+}
+
+.success-checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.success-checkmark::before {
+  content: '';
+  width: 40%;
+  height: 20%;
+  border-left: 4px solid white;
+  border-bottom: 4px solid white;
+  transform: rotate(-45deg) translate(15%, -10%);
+}
+
+/* Authentication failed overlay */
+.auth-failed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  animation: fadeIn 0.5s ease-out;
+  z-index: 10;
+}
+
+.failed-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #f44336;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 40px;
+}
+
+/* Retry button */
+.retry-button {
+  display: block;
+  margin: 1rem auto;
+  padding: 12px 24px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background-color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ...existing code... */
+
+.login-title {
+  color: #1a3a5f;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+/* Face login start section */
+.login-start-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.face-icon-container {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #e0f2f1, #b2ebf2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 128, 128, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.face-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #008080;
+  position: relative;
+}
+
+.face-icon:before, 
+.face-icon:after {
+  content: '';
+  position: absolute;
+  background-color: #008080;
+}
+
+.face-icon:before {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 20px;
+  left: 15px;
+  box-shadow: 20px 0 0 0 #008080;
+  background-color: #fff;
+}
+
+.face-icon:after {
+  width: 30px;
+  height: 10px;
+  border-radius: 0 0 15px 15px;
+  bottom: 15px;
+  left: 15px;
+}
+
+.login-instruction {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 300px;
+}
+
+.start-face-auth-btn {
+  background: linear-gradient(135deg, #008080, #20b2aa);
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 128, 128, 0.3);
+  transition: all 0.3s ease;
+}
+
+.start-face-auth-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 128, 128, 0.4);
+}
+
+.start-face-auth-btn:disabled {
+  background: linear-gradient(135deg, #b2dfdb, #80cbc4);
+  cursor: not-allowed;
+}
+
+.loader-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 128, 128, 0.1);
+  border-top-color: #008080;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+.system-status {
+  color: #4caf50;
+  font-size: 0.9rem;
+  margin-top: 15px;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Auth action buttons for retry/cancel */
+.auth-action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.retry-button {
+  flex: 2;
+  padding: 12px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 12px;
+  background: #f5f5f5;
+  color: #555;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+}
+
+.cancel-button:hover {
+  background: #e0e0e0;
+}
+
+/* Alternative auth for registration link */
+.alternative-auth {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.alternative-auth p {
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+
+.register-link {
+  display: inline-block;
+  color: #008080;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: 2px solid #008080;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.register-link:hover {
+  background-color: #008080;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 128, 128, 0.2);
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 128, 128, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(0, 128, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 128, 128, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Enhanced responsive styles */
+@media (max-width: 480px) {
+  .login-card, .signup-card {
+    padding: 1.5rem;
+    margin: 1rem;
+    max-width: 90%;
+  }
+
+  .login-title, .signup-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .face-icon-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .login-instruction {
+    font-size: 1rem;
+  }
+
+  .start-face-auth-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+
+  .auth-success-overlay h3,
+  .auth-failed-overlay h3 {
+    font-size: 1.3rem;
+  }
+
+  .success-checkmark,
+  .failed-icon {
+    width: 60px;
+    height: 60px;
+  }
 }
 

@@ -12,7 +12,8 @@ import RoomPage from './pages/Home/Room/index.jsx';
 import AshaWorkerLogin from "./AshaWorkerLogin"; 
 import AshaDashboard from "./AshaWorkerDashboard";
 import Navbar from "./Navbar";
-import FacialAuth from './components/FacialAuth';
+import FacialAuth from './components/FacialAuth.js'; // Fixed capitalization in import
+import CameraTester from './CameraTester'; // Add CameraTester to imports
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -57,6 +58,8 @@ function App() {
                 <Route path="/asha-login" element={<AshaWorkerLogin />} /> 
                 <Route path="/asha-dashboard" element={<AshaDashboard />} /> 
                 <Route path="/facial-auth" element={<FacialAuth />} />
+                {/* Add the camera test route */}
+                <Route path="/camera-test" element={<CameraTester />} />
               </Routes>
             </div>
           </div>
