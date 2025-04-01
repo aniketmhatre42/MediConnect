@@ -505,40 +505,72 @@
   transform: translate(-50%, -60%) rotate(-45deg);
 }
 
-/* Animation for face detection success */
-@keyframes slideInRight {
-  from {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+/* Face match warning overlay */
+.face-match-warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+/* Update face match warning overlay to be more serious */
+.face-match-warning {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease;
+  border-top: 6px solid #f44336;
 }
 
-@keyframes pulse-success {
-  0% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
-  }
+.warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #f44336;
+}
+
+.face-match-warning h3 {
+  color: #f44336;
+  margin-bottom: 1rem;
+}
+
+.face-match-warning p {
+  color: #555;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.face-match-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.cancel-match-btn {
+  padding: 12px 32px;
+  background-color: #f5f5f5;
+  color: #555;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-match-btn:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
 }
 
 /* Improved camera controls to better space the buttons */
@@ -565,6 +597,34 @@
 .cancel-button:hover {
   background-color: #e0e0e0;
   transform: translateY(-2px);
+}
+
+/* Add styling for the Start Camera button */
+.start-button {
+  background: linear-gradient(135deg, #008080, #20b2aa);
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 128, 128, 0.3);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto;
+  display: block;
+}
+
+.start-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 128, 128, 0.4);
+}
+
+.start-button:disabled {
+  background: linear-gradient(135deg, #b2dfdb, #80cbc4);
+  cursor: not-allowed;
 }
 
 /* Animations */
@@ -634,5 +694,60 @@
     max-width: 90%;
     padding: 1.8rem;
     margin: 1rem auto;
+  }
+}
+
+/* Add styles for the scan timer */
+.scan-timer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* Enhance progress bar for better visual feedback */
+.detection-progress-bar {
+  transition: width 0.3s ease-out;
+  background: linear-gradient(to right, #2196f3, #4caf50);
+  height: 100%;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.detection-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 20px 20px;
+  animation: move-progress-stripes 1s linear infinite;
+  z-index: 1;
+}
+
+@keyframes move-progress-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 0;
   }
 }

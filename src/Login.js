@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 import { Link } from 'react-router-dom';
 import './Login.css';
+import { loadFaceDescriptor } from './services/localFaceStorage';
+import { getFaceFromFirebase } from './services/firebaseFaceService';
 
 const Login = () => {
   // Face authentication state
@@ -24,6 +26,15 @@ const Login = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+
+  // Add minimum scan duration
+  const MIN_SCAN_TIME_MS = 5000; // 5 seconds minimum scan time
+  const [scanStartTime, setScanStartTime] = useState(null);
+  const [scanTimeRemaining, setScanTimeRemaining] = useState(0);
+
+  // Add the missing state variables for authentication status messages
+  const [authStatus, setAuthStatus] = useState(null); // 'success', 'error', or null
+  const [authMessage, setAuthMessage] = useState('');
 
   // Load models on component mount
   useEffect(() => {
@@ -65,6 +76,8 @@ const Login = () => {
     setIsAuthenticated(false);
     setError('');
     setScanningComplete(false);
+    setScanStartTime(Date.now()); // Record scan start time
+    setScanTimeRemaining(MIN_SCAN_TIME_MS / 1000);
     
     try {
       setScanStatus('Starting camera...');
@@ -136,9 +149,23 @@ const Login = () => {
     const detectFace = async () => {
       if (!videoRef.current || !canvasRef.current || matchAttempts >= maxAttempts) return;
       
+      // Calculate time elapsed and remaining
+      const elapsedTime = Date.now() - scanStartTime;
+      const remainingTime = Math.max(0, Math.ceil((MIN_SCAN_TIME_MS - elapsedTime) / 1000));
+      setScanTimeRemaining(remainingTime);
+      const scanComplete = elapsedTime >= MIN_SCAN_TIME_MS;
+      
       try {
-        setScanStatus(`Scanning for matching face (${matchAttempts + 1}/${maxAttempts})...`);
-        setMatchProgress((matchAttempts / maxAttempts) * 100);
+        // Update status message to include time remaining
+        if (!scanComplete) {
+          setScanStatus(`Scanning your face... ${remainingTime}s remaining`);
+        } else {
+          setScanStatus(`Matching face (${matchAttempts + 1}/${maxAttempts})...`);
+        }
+        
+        // Update progress to reflect both time and matching progress
+        setMatchProgress(Math.min(100, ((elapsedTime / MIN_SCAN_TIME_MS) * 50) + 
+            (scanComplete ? (matchAttempts / maxAttempts) * 50 : 0)));
         
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -186,79 +213,116 @@ const Login = () => {
             setFaceDistance('good');
           }
           
-          setFaceDetected(true);
-          
-          // Compare with stored face descriptors
-          for (const userData of storedFaceData) {
-            if (userData.descriptor) {
-              const storedDescriptor = new Float32Array(userData.descriptor);
-              const distance = faceapi.euclideanDistance(detection.descriptor, storedDescriptor);
-              
-              // Keep track of the best match
-              if (distance < bestMatch.distance) {
-                bestMatch = { 
-                  distance, 
-                  user: userData 
-                };
+          // Only proceed with matching if minimum scan time has elapsed
+          if (scanComplete) {
+            setFaceDetected(true);
+            
+            // Compare with stored face descriptors
+            for (const userData of storedFaceData) {
+              try {
+                let storedDescriptor = null;
+                
+                // First try to get descriptor from Firebase if we have username
+                if (userData.username) {
+                  try {
+                    // Modified to use username as key
+                    storedDescriptor = await getFaceFromFirebase(userData.username);
+                    if (storedDescriptor) {
+                      console.log(`Retrieved face descriptor for ${userData.username} from Firebase`);
+                    }
+                  } catch (fbError) {
+                    console.warn(`Failed to get descriptor for ${userData.username} from Firebase:`, fbError);
+                  }
+                }
+                
+                // If no descriptor from Firebase, try to get from localStorage
+                if (!storedDescriptor && userData.descriptor) {
+                  storedDescriptor = new Float32Array(userData.descriptor);
+                  console.log(`Using face descriptor from localStorage for ${userData.username || userData.userId}`);
+                }
+                
+                // Skip this user if we couldn't get a descriptor
+                if (!storedDescriptor) continue;
+                
+                // Calculate the similarity distance between detected face and stored face
+                const distance = faceapi.euclideanDistance(detection.descriptor, storedDescriptor);
+                
+                console.log(`Distance for ${userData.username || userData.userId}: ${distance.toFixed(4)}`);
+                
+                // Keep track of the best match so far
+                if (distance < bestMatch.distance) {
+                  bestMatch = { distance, user: userData };
+                }
+                
+                // If we have a very close match, stop early
+                const MATCH_THRESHOLD = 0.45; // Lower is stricter matching
+                if (distance < MATCH_THRESHOLD) {
+                  setIsAuthenticated(true);
+                  setFaceName(userData.username || 'User');
+                  setScanStatus(`Welcome back, ${userData.username || 'User'}!`);
+                  setLoading(false);
+                  setScanningComplete(true);
+                  
+                  // Sign in the user
+                  handleSuccessfulLogin(userData);
+                  
+                  // Redirect after a short delay
+                  setTimeout(() => {
+                    stopVideoStream();
+                    navigate('/');
+                  }, 2000);
+                  return;
+                }
+              } catch (compareError) {
+                console.error('Error comparing face descriptors:', compareError);
               }
-              
-              // If we have a very good match, stop early
-              if (distance < 0.45) {
+            }
+            
+            matchAttempts++;
+            
+            if (matchAttempts >= maxAttempts) {
+              // After all attempts, if we have a reasonable match, use it
+              const FALLBACK_THRESHOLD = 0.6; // More lenient threshold for fallback matching
+              if (bestMatch.distance < FALLBACK_THRESHOLD) {
                 setIsAuthenticated(true);
-                setFaceName(userData.username || 'User');
-                setScanStatus(`Welcome back, ${userData.username || 'User'}!`);
-                setLoading(false);
-                setScanningComplete(true);
+                setFaceName(bestMatch.user.username || 'User');
+                setScanStatus(`Welcome back, ${bestMatch.user.username || 'User'}!`);
                 
                 // Sign in the user
-                sessionStorage.setItem('authenticated', 'true');
-                sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                handleSuccessfulLogin(bestMatch.user);
                 
-                // Redirect after a short delay
                 setTimeout(() => {
                   stopVideoStream();
                   navigate('/');
                 }, 2000);
-                return;
+              } else {
+                setScanStatus('Face not recognized. Please try again or register a new account.');
+                setError('No matching face found');
               }
-            }
-          }
-          
-          matchAttempts++;
-          
-          if (matchAttempts >= maxAttempts) {
-            // After all attempts, if we have a reasonable match, use it
-            if (bestMatch.distance < 0.6) {
-              setIsAuthenticated(true);
-              setFaceName(bestMatch.user.username || 'User');
-              setScanStatus(`Welcome back, ${bestMatch.user.username || 'User'}!`);
-              
-              // Sign in the user
-              sessionStorage.setItem('authenticated', 'true');
-              sessionStorage.setItem('currentUser', JSON.stringify(bestMatch.user));
-              
-              setTimeout(() => {
-                stopVideoStream();
-                navigate('/');
-              }, 2000);
+              setLoading(false);
+              setScanningComplete(true);
             } else {
-              setScanStatus('Face not recognized. Please try again or register a new account.');
-              setError('No matching face found');
+              requestAnimationFrame(detectFace);
             }
-            setLoading(false);
-            setScanningComplete(true);
           } else {
+            // Continue scanning until minimum time requirement met
             requestAnimationFrame(detectFace);
           }
         } else {
-          setScanStatus('No face detected. Please position your face in the frame.');
+          setScanStatus(`No face detected. Please position your face in the frame. ${remainingTime}s remaining`);
           setFaceDetected(false);
-          matchAttempts++;
           
-          if (matchAttempts >= maxAttempts) {
-            setScanStatus('Face not detected. Please try again.');
-            setLoading(false);
-            setScanningComplete(true);
+          // Only count as an attempt if minimum scan time has passed
+          if (scanComplete) {
+            matchAttempts++;
+            
+            if (matchAttempts >= maxAttempts) {
+              setScanStatus('Face not detected. Please try again.');
+              setLoading(false);
+              setScanningComplete(true);
+            } else {
+              requestAnimationFrame(detectFace);
+            }
           } else {
             requestAnimationFrame(detectFace);
           }
@@ -293,6 +357,29 @@ const Login = () => {
     setScanningComplete(false);
     setError('');
     startFaceAuthentication();
+  };
+
+  const handleSuccessfulLogin = (userData) => {
+    // Store user information consistently in both sessionStorage and localStorage
+    sessionStorage.setItem('username', userData?.username || 'User');
+    sessionStorage.setItem('authenticated', 'true');
+    sessionStorage.setItem('userId', userData?.userId || 'user_temp');
+    
+    // Also store in localStorage for persistence if needed
+    localStorage.setItem('user', JSON.stringify({
+      username: userData?.username || 'User',
+      userId: userData?.userId || 'user_temp',
+      authenticated: true
+    }));
+    
+    // Dispatch custom event to notify components (like Navbar) of auth change
+    window.dispatchEvent(new Event('authChange'));
+    
+    // Show success message
+    setAuthStatus('success');
+    setAuthMessage('Authentication successful! Redirecting...');
+    
+    // ...existing redirect code...
   };
 
   return (
@@ -372,6 +459,23 @@ const Login = () => {
                         style={{width: `${matchProgress}%`}}
                       ></div>
                     </div>
+                    
+                    {/* Add visible timer during scan */}
+                    {scanTimeRemaining > 0 && (
+                      <div className="scan-timer" style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(0,0,0,0.7)',
+                        color: 'white',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                      }}>
+                        {scanTimeRemaining}s
+                      </div>
+                    )}
                     
                     {/* Face position feedback */}
                     {!faceDetected && (

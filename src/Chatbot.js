@@ -450,14 +450,44 @@ const MEDICONNECTChatbot = () => {
   const [prescriptionEnable, setPrescriptionEnable] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const [username, setUsername] = useState("");
+  const [welcomeShown, setWelcomeShown] = useState(false);
 
   // Initialize chat with welcome message
   useEffect(() => {
-    // Small delay for visual effect
-    setTimeout(() => {
-      setMessages([{ text: languages[language].welcome, sender: "admin", time: getCurrentTime() }]);
-    }, 500);
-  }, []);
+    // Check if user is authenticated
+    const sessionUsername = sessionStorage.getItem("username");
+    const isAuthenticated = sessionStorage.getItem("authenticated") === "true";
+    const localUser = localStorage.getItem("user");
+    
+    let currentUsername = "User";
+    
+    if (sessionUsername && isAuthenticated) {
+      currentUsername = sessionUsername;
+    } else if (localUser) {
+      try {
+        const userData = JSON.parse(localUser);
+        currentUsername = userData.username || "User";
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+      }
+    }
+    
+    setUsername(currentUsername);
+    
+    // Add welcome message as the first message
+    if (!welcomeShown) {
+      const welcomeMessage = {
+        text: `Welcome, ${currentUsername}! 👋 How can I assist you with your health concerns today?`,
+        sender: "bot",
+        timestamp: new Date().toISOString(),
+      };
+      
+      setMessages([welcomeMessage]);
+      setWelcomeShown(true);
+    }
+    
+  }, [welcomeShown]);
 
   // Auto scroll to bottom whenever messages change
   useEffect(() => {

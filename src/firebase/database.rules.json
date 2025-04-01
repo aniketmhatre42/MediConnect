@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "faces": {
+      "$uid": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "debug": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

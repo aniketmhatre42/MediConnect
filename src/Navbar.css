@@ -163,6 +163,93 @@
   backdrop-filter: blur(10px);
 }
 
+/* Dropdown menu styles for Asha Worker */
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px 0;
+  width: 180px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+.dropdown-link {
+  display: block;
+  color: #333;
+  padding: 12px 20px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.dropdown-link:hover {
+  background-color: #f5f5f5;
+  color: #008080;
+}
+
+/* Ensure proper alignment with other nav items */
+.nav-item {
+  position: relative;
+}
+
+/* Improved dropdown styles */
+.dropdown-item {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px 0;
+  width: 180px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+  overflow: hidden;
+}
+
+.dropdown-link {
+  display: block;
+  color: #333 !important;
+  padding: 12px 20px !important;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.dropdown-link:hover {
+  background-color: #f5f5f5;
+  color: #008080 !important;
+}
+
+.dropdown-link::after {
+  display: none !important;
+}
+
+/* Animation for dropdown */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 900px) {
   .navbar {
     height: 60px;
@@ -217,10 +304,67 @@
   .logo-typewriter {
     font-size: 1.5rem;
   }
+
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    max-height: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    border-radius: 0;
+    animation: slideDown 0.3s ease forwards;
+  }
+  
+  .dropdown-item {
+    display: block;
+  }
+  
+  .dropdown-link {
+    padding: 12px 40px !important;
+    color: white !important;
+  }
+  
+  .dropdown-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white !important;
+  }
+  
+  @keyframes slideDown {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 300px;
+      opacity: 1;
+    }
+  }
 }
 
 @media (max-width: 480px) {
   .logo-typewriter {
     font-size: 1.2rem;
+  }
+}
+
+/* Responsive fixes for the dropdown */
+@media screen and (max-width: 960px) {
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  
+  .dropdown-link {
+    padding: 12px 40px;
+    color: #444;
+  }
+  
+  .dropdown-link:hover {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
