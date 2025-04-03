@@ -1,18 +1,46 @@
+/* Enhanced prescription download button */
 .generate-pdf-btn {
-    background-color: teal;
+    background-color: #008080;
     color: #fff;
     border: none;
-    padding: 20px 30px; 
-    font-size: 20px;
+    padding: 16px 28px; 
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 30px;
+    border-radius: 50px;
     width: auto; 
     max-width: 300px; 
     text-align: center; 
-    margin: 20px auto; 
-    display: block; 
+    margin: 25px auto; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 128, 128, 0.2);
 }
 
 .generate-pdf-btn:hover {
-    background-color: #06575b;
+    background-color: #006666;
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(0, 128, 128, 0.3);
+}
+
+.generate-pdf-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 128, 128, 0.2);
+}
+
+/* Button icon styling */
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+/* Add responsive styling */
+@media (max-width: 576px) {
+    .generate-pdf-btn {
+        padding: 14px 24px;
+        font-size: 0.95rem;
+        max-width: 250px;
+    }
 }

@@ -287,6 +287,241 @@
   transform: rotate(15deg);
 }
 
+/* Improved Prescription Styling with Light Theme */
+.prescription-bubble {
+  padding: 0 !important;
+  max-width: 100% !important;
+  width: 350px;
+  background-color: #fff !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 4px 15px rgba(0, 128, 128, 0.15) !important;
+}
+
+.prescription-content {
+  width: 100%;
+}
+
+.prescription-header {
+  background-color: #008080;
+  color: white;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 1.2rem;
+  border-top-right-radius: 1.2rem;
+}
+
+.prescription-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.prescription-date {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  color: white; /* Changed to white */
+}
+
+.prescription-body {
+  padding: 15px 18px;
+  color: #333;
+  background-color: #fff;
+  text-align: justify;
+}
+
+.prescription-section-title {
+  margin: 16px 0 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Different colors for remedies and medications sections */
+.prescription-section-title.remedies {
+  color: #2e7d32; /* Green for remedies */
+}
+
+.prescription-section-title.medications {
+  color: #1565c0; /* Blue for medications */
+}
+
+.prescription-symptom {
+  font-weight: 500;
+  margin: 12px 0;
+  font-size: 0.95rem;
+  background-color: #f0f7f7;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 4px solid #008080;
+  text-align: justify;
+}
+
+/* Enhanced prescription list items with proper bullets */
+.prescription-item {
+  position: relative;
+  margin: 8px 0 8px 0;
+  padding-left: 24px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  list-style-type: none;
+  text-align: justify;
+}
+
+/* Different styling for remedies and medications items */
+.prescription-item.remedy {
+  color: #2e7d32; /* Green for remedies */
+}
+
+.prescription-item.medication {
+  color: #1565c0; /* Blue for medications */
+}
+
+.prescription-item::before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.prescription-item.remedy::before {
+  color: #2e7d32; /* Green bullet for remedies */
+}
+
+.prescription-item.medication::before {
+  color: #1565c0; /* Blue bullet for medications */
+}
+
+/* Add a container for prescription items to create a proper list */
+.prescription-items-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prescription-spacer {
+  height: 12px;
+}
+
+.prescription-line {
+  margin: 10px 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+.prescription-line.medication {
+  color: #1565c0;
+  font-style: italic;
+  padding: 10px;
+  background-color: rgba(21, 101, 192, 0.1);
+  border-radius: 6px;
+  margin: 10px 0;
+}
+
+.prescription-footer {
+  padding: 12px 18px;
+  background-color: #f5f7fa;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #666;
+  border-bottom-left-radius: 1.2rem;
+  border-bottom-right-radius: 1.2rem;
+  text-align: center;
+}
+
+.prescription-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.generate-pdf-btn, .send-to-asha {
+  background-color: #008080;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 35px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+  justify-content: center;
+}
+
+.send-to-asha {
+  background-color: #008080;
+}
+
+.generate-pdf-btn::before { /* Download symbol */
+  font-size: 1.1rem;
+}
+
+.send-to-asha::before {
+/* Healthcare worker emoji */
+  font-size: 1.1rem;
+}
+
+.generate-pdf-btn:hover, .send-to-asha:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove dark mode specific styles for prescription to keep theme light */
+@media (prefers-color-scheme: dark) {
+  .prescription-bubble {
+    background-color: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .prescription-body {
+    color: #333;
+  }
+  
+  .prescription-footer {
+    background-color: #f5f7fa;
+    border-top: 1px solid #e0e0e0;
+    color: #666;
+  }
+  
+  .prescription-symptom {
+    background-color: #f0f7f7;
+    border-left: 3px solid #008080;
+  }
+}
+
+/* Responsive adjustments for prescription on smaller screens */
+@media (max-width: 480px) {
+  .prescription-bubble {
+    width: 280px;
+  }
+  
+  .prescription-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .prescription-item, .prescription-line, .prescription-section-title {
+    font-size: 0.85rem;
+  }
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {

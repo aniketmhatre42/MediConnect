@@ -1,9 +1,12 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef, useCallback } from "react";
 import VideoRecommendations from './components/VideoRecommendations';
 import './Chatbot.css';
 import './Prescription.css';
 import { Trash2, Send } from "lucide-react";
 import Prescription from "./Prescription";
+import { ref, set, push } from "firebase/database";
+import { rtdb } from "./firebase/config";
+
 const languages = {
   english: {
     welcome: "Hello! I'm MEDICONNECT, your medical assistant. How can I help you today?",
@@ -491,7 +494,15 @@ const MEDICONNECTChatbot = () => {
 
   // Auto scroll to bottom whenever messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      
+      // Prevent focus from moving to the video section by keeping focus in the chat area
+      const chatContainer = document.querySelector('.container');
+      if (chatContainer) {
+        chatContainer.focus();
+      }
+    }
   }, [messages]);
 
   // Get current time for message timestamp
@@ -568,212 +579,404 @@ const MEDICONNECTChatbot = () => {
 };
 
 
-  const simulateTyping = (botResponse) => {
-    setIsTyping(true);
-    // Simulate typing delay based on message length (minimum 1s, maximum 3s)
-    const typingTime = Math.min(Math.max(botResponse.text.length * 20, 1000), 3000);
-    
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages(prev => [...prev, { ...botResponse, time: getCurrentTime() }]);
-    }, typingTime);
-  };
+// Add this helper function to detect if a message contains prescription content
+const isPrescriptionMessage = (text) => {
+  return text.includes("Here are some remedies") || 
+         text.includes("The medication you mentioned may not be");
+};
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (input.trim() === "") return;
+const simulateTyping = (botResponse) => {
+  setIsTyping(true);
+  // Simulate typing delay based on message length (minimum 1s, maximum 3s)
+  const typingTime = Math.min(Math.max(botResponse.text.length * 20, 1000), 3000);
+  
+  setTimeout(() => {
+    setIsTyping(false);
+    setMessages(prev => [...prev, { ...botResponse, time: getCurrentTime() }]);
+  }, typingTime);
+};
 
-    const userMessage = { text: input, sender: "user", time: getCurrentTime() };
-    setMessages(prev => [...prev, userMessage]);
-    
-    let botResponse;
-    
-    const lowerInput = input.toLowerCase()
-    if (
-      lowerInput === "hello" || 
-      lowerInput === "hi" || 
-      lowerInput === "Hie" ||
-      lowerInput === "नमस्ते" || 
-      lowerInput === "नमस्कार" 
-    ) {
-      botResponse = { text: languages[language].greeting, sender: "bot" }
-    } else if (
-      lowerInput === "thank you" || 
-      lowerInput === "thanks" ||
-      lowerInput === "धन्यवाद" || // Hindi
-      lowerInput === "आभार" // Marathi
-    ) {
-      botResponse = { text: languages[language].thankYou, sender: "bot" }
-      const tempPrescription = {
-        currentSymptom,
-        currentRemedies,
-        currentMedication
-      }
-      window.localStorage.setItem("prescription", JSON.stringify(tempPrescription));
-      setPrescriptionEnable(true)
-    } else {
-      switch (conversationStage) {
-        case "initial":
-          const symptom = findSymptom(input)
-          if (symptom) {
-            setCurrentSymptom(symptom)
-            botResponse = { text: languages[language].askDuration, sender: "bot" }
-            setConversationStage("askingDuration")
-          } else {
-            botResponse = { text: languages[language].notFound, sender: "bot" }
-            setConversationStage("initial")
-          }
-          break
-        case "askingDuration":
-          botResponse = { text: languages[language].askMedicine, sender: "bot" }
-          setConversationStage("askingMedicine")
-          break
-        case "askingMedicine":
-          const tookMedicine = input.toLowerCase().includes("yes") || 
-                               input.toLowerCase().includes("हां") || // Hindi
-                               input.toLowerCase().includes("होय") // Marathi
-          if (tookMedicine) {
-            botResponse = { text: languages[language].askWhichMedicine, sender: "bot" }
-            setConversationStage("askingWhichMedicine")
-          } else {
-            botResponse = { text: getResponse(currentSymptom, messages[messages.length - 2].text, false, null), sender: "bot" }
-            setConversationStage("initial")
-            // setCurrentSymptom(null)
-          }
-          break
-        case "askingWhichMedicine":
-          botResponse = { text: getResponse(currentSymptom, messages[messages.length - 4].text, true, input), sender: "bot" }
-          setConversationStage("initial")
-          // setCurrentSymptom(null)
-          break
-        default:
+const handleSubmit = (e) => {
+  e.preventDefault();
+  if (input.trim() === "") return;
+
+  const userMessage = { text: input, sender: "user", time: getCurrentTime() };
+  setMessages(prev => [...prev, userMessage]);
+  
+  let botResponse;
+  
+  const lowerInput = input.toLowerCase()
+  if (
+    lowerInput === "hello" || 
+    lowerInput === "hi" || 
+    lowerInput === "Hie" ||
+    lowerInput === "नमस्ते" || 
+    lowerInput === "नमस्कार" 
+  ) {
+    botResponse = { text: languages[language].greeting, sender: "bot" }
+  } else if (
+    lowerInput === "thank you" || 
+    lowerInput === "thanks" ||
+    lowerInput === "धन्यवाद" || // Hindi
+    lowerInput === "आभार" // Marathi
+  ) {
+    botResponse = { text: languages[language].thankYou, sender: "bot" }
+    const tempPrescription = {
+      currentSymptom,
+      currentRemedies,
+      currentMedication
+    }
+    window.localStorage.setItem("prescription", JSON.stringify(tempPrescription));
+    setPrescriptionEnable(true)
+  } else {
+    switch (conversationStage) {
+      case "initial":
+        const symptom = findSymptom(input)
+        if (symptom) {
+          setCurrentSymptom(symptom)
+          botResponse = { text: languages[language].askDuration, sender: "bot" }
+          setConversationStage("askingDuration")
+        } else {
           botResponse = { text: languages[language].notFound, sender: "bot" }
           setConversationStage("initial")
-      }
+        }
+        break
+      case "askingDuration":
+        botResponse = { text: languages[language].askMedicine, sender: "bot" }
+        setConversationStage("askingMedicine")
+        break
+      case "askingMedicine":
+        const tookMedicine = input.toLowerCase().includes("yes") || 
+                             input.toLowerCase().includes("हां") || // Hindi
+                             input.toLowerCase().includes("होय") // Marathi
+        if (tookMedicine) {
+          botResponse = { text: languages[language].askWhichMedicine, sender: "bot" }
+          setConversationStage("askingWhichMedicine")
+        } else {
+          botResponse = { text: getResponse(currentSymptom, messages[messages.length - 2].text, false, null), sender: "bot" }
+          setConversationStage("initial")
+          // setCurrentSymptom(null)
+        }
+        break
+      case "askingWhichMedicine":
+        botResponse = { text: getResponse(currentSymptom, messages[messages.length - 4].text, true, input), sender: "bot" }
+        setConversationStage("initial")
+        // setCurrentSymptom(null)
+        break
+      default:
+        botResponse = { text: languages[language].notFound, sender: "bot" }
+        setConversationStage("initial")
     }
-    
-    // Instead of immediately adding bot response, simulate typing
-    simulateTyping(botResponse);
-    setInput("");
-  };
+  }
+  
+  // Instead of immediately adding bot response, simulate typing
+  simulateTyping(botResponse);
+  setInput("");
+};
 
-  const handleLanguageChange = (newLanguage) => {
-    setLanguage(newLanguage);
-    setIsTyping(true);
-    
-    // Brief delay to simulate loading the new language
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages([{ text: languages[newLanguage].welcome, sender: "bot", time: getCurrentTime() }]);
-      setCurrentSymptom(null);
-      setConversationStage("initial");
-    }, 1000);
-  };
+const handleLanguageChange = (newLanguage) => {
+  setLanguage(newLanguage);
+  setIsTyping(true);
+  
+  // Brief delay to simulate loading the new language
+  setTimeout(() => {
+    setIsTyping(false);
+    setMessages([{ text: languages[newLanguage].welcome, sender: "bot", time: getCurrentTime() }]);
+    setCurrentSymptom(null);
+    setConversationStage("initial");
+  }, 1000);
+};
 
-  const handleClearChat = () => {
-    // Add fade-out animation
-    const messageElements = document.querySelectorAll('.message');
-    messageElements.forEach((el, i) => {
-      el.style.animation = `fadeOut 0.3s forwards ${i * 0.05}s`;
+const handleClearChat = () => {
+  // Add fade-out animation
+  const messageElements = document.querySelectorAll('.message');
+  messageElements.forEach((el, i) => {
+    el.style.animation = `fadeOut 0.3s forwards ${i * 0.05}s`;
+  });
+  
+  // Wait for animations to complete before clearing
+  setTimeout(() => {
+    setMessages([{ text: languages[language].welcome, sender: "bot", time: getCurrentTime() }]);
+    setCurrentSymptom(null);
+    setConversationStage("initial");
+  }, messageElements.length * 50 + 300);
+};
+
+const handleLogout = useCallback(() => {
+  // ...existing logout code...
+}, []); // Empty dependencies since this doesn't need to change
+
+const sendToAshaWorker = async (prescriptionData) => {
+  try {
+    const prescriptionsRef = ref(rtdb, 'prescriptions');
+    const newPrescriptionRef = push(prescriptionsRef);
+    await set(newPrescriptionRef, {
+      ...prescriptionData,
+      timestamp: new Date().toISOString(),
+      status: 'pending',
+      assignedTo: 'vineetapatil@gmail.com'
     });
-    
-    // Wait for animations to complete before clearing
-    setTimeout(() => {
-      setMessages([{ text: languages[language].welcome, sender: "bot", time: getCurrentTime() }]);
-      setCurrentSymptom(null);
-      setConversationStage("initial");
-    }, messageElements.length * 50 + 300);
+    return true;
+  } catch (error) {
+    console.error('Error sending prescription:', error);
+    return false;
+  }
+};
+
+const handleSendToAsha = async () => {
+  const prescriptionData = {
+    userId: sessionStorage.getItem('userId'),
+    username: sessionStorage.getItem('username'),
+    symptoms: currentSymptom,
+    remedies: currentRemedies,
+    medications: currentMedication
   };
 
-  return (
-    <>
-      <div className="container">
-        <div className="header">
-          <h2 className="title">MEDICONNECT</h2>
-          <div className="language-controls">
-            <select 
-              className="language-select"
-              onChange={(e) => handleLanguageChange(e.target.value)} 
-              defaultValue={language}
-            >
-              <option value="english">English</option>
-              <option value="hindi">हिंदी</option>
-              <option value="marathi">मराठी</option>
-              <option value="punjabi">ਪੰਜਾਬੀ</option>
-              <option value="tamil">தமிழ்</option>
-            </select>
-            <button 
-              onClick={handleClearChat} 
-              className="clear-button" 
-              aria-label={languages[language].clearChat}
-            >
-              <Trash2 size={16} className="icon" />
-            </button>
-          </div>
-        </div>
+  const success = await sendToAshaWorker(prescriptionData);
+  if (success) {
+    alert('Prescription sent to Asha worker successfully!');
+  } else {
+    alert('Failed to send prescription. Please try again.');
+  }
+};
 
-        <div className="messages">
-          {messages.map((message, index) => (
-            <div 
-              key={index} 
-              className={`message ${message.sender === "user" ? "user" : "admin"}`}
-              style={{animationDelay: `${index * 0.1}s`}}
-            >
-              <div className={`message-bubble ${message.sender === "user" ? "user-bubble" : "admin-bubble"}`}>
-                {message.text.split('\n').map((line, i) => (
-                  <p key={i} className="message-line">{line}</p>
-                ))}
-              </div>
-              <div className="message-time">{message.time}</div>
-            </div>
-          ))}
-          
-          {isTyping && (
-            <div className="typing-indicator">
-              <span className="typing-dot"></span>
-              <span className="typing-dot"></span>
-              <span className="typing-dot"></span>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="input-form">
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder={languages[language].placeholder}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            aria-label={languages[language].placeholder}
-            className="input"
-            disabled={isTyping}
-          />
-          <button 
-            type="submit" 
-            className="send-button" 
-            aria-label="Send message"
-            disabled={isTyping || input.trim() === ""}
+return (
+  <>
+    <div className="container" tabIndex="-1">
+      <div className="header">
+        <h2 className="title">MEDICONNECT</h2>
+        <div className="language-controls">
+          <select 
+            className="language-select"
+            onChange={(e) => handleLanguageChange(e.target.value)} 
+            defaultValue={language}
           >
-            <Send size={20} className="icon" />
-            <span className="sr-only">Send</span>
+            <option value="english">English</option>
+            <option value="hindi">हिंदी</option>
+            <option value="marathi">मराठी</option>
+            <option value="punjabi">ਪੰਜਾਬੀ</option>
+            <option value="tamil">தமிழ்</option>
+          </select>
+          <button 
+            onClick={handleClearChat} 
+            className="clear-button" 
+            aria-label={languages[language].clearChat}
+          >
+            <Trash2 size={16} className="icon" />
           </button>
         </div>
-      </form>
-      
-      {prescriptionEnable && 
-        <div>
-          <Prescription symptoms={currentSymptom} remedies={currentRemedies} medications={currentMedication} />
-        </div>
-      }
-      
-      <div>
-        {currentSymptom && <VideoRecommendations symptom={currentSymptom} />}
       </div>
-    </>
-  );
+
+      <div className="messages">
+        {messages.map((message, index) => (
+          <div 
+            key={index} 
+            className={`message ${message.sender === "user" ? "user" : "admin"}`}
+            style={{animationDelay: `${index * 0.1}s`}}
+          >
+            <div className={`message-bubble ${message.sender === "user" ? "user-bubble" : "admin-bubble"} ${isPrescriptionMessage(message.text) ? 'prescription-bubble' : ''}`}>
+              {isPrescriptionMessage(message.text) ? (
+                <div className="prescription-content">
+                  <div className="prescription-header">
+                    <h3>MediConnect Prescription</h3>
+                    <div className="prescription-date">{new Date().toLocaleDateString()}</div>
+                  </div>
+                  <div className="prescription-body">
+                    {(() => {
+                      // Process the message text to properly group sections
+                      const lines = message.text.split('\n');
+                      let currentSection = null;
+                      let sectionItems = [];
+                      let result = [];
+                      let itemCounter = 0;
+                      
+                      lines.forEach((line, i) => {
+                        // Handle section headers
+                        if (line.toLowerCase().includes("remedies")) {
+                          // Close previous section if any
+                          if (currentSection === "remedies" && sectionItems.length > 0) {
+                            result.push(
+                              <ul key={`remedies-${i}`} className="prescription-items-list">
+                                {sectionItems}
+                              </ul>
+                            );
+                            sectionItems = [];
+                          }
+                          
+                          result.push(
+                            <h4 key={`remedies-title-${i}`} className="prescription-section-title remedies">
+                              <span role="img" aria-label="remedy">🌿</span> Recommended Remedies:
+                            </h4>
+                          );
+                          currentSection = "remedies";
+                        } 
+                        else if (line.includes("The medication you mentioned may not be")) {
+                          // Close previous section if any
+                          if (currentSection === "remedies" && sectionItems.length > 0) {
+                            result.push(
+                              <ul key={`remedies-end-${i}`} className="prescription-items-list">
+                                {sectionItems}
+                              </ul>
+                            );
+                            sectionItems = [];
+                          }
+                          
+                          result.push(
+                            <h4 key={`medications-title-${i}`} className="prescription-section-title medications">
+                              <span role="img" aria-label="medication">💊</span> Medication Information:
+                            </h4>
+                          );
+                          currentSection = "medications";
+                          
+                          // Add the medication information line
+                          result.push(
+                            <p key={`medication-info-${i}`} className="prescription-line medication">
+                              {line}
+                            </p>
+                          );
+                        }
+                        // Handle symptom summary
+                        else if (line.includes("experiencing") && line.includes("for")) {
+                          result.push(
+                            <div key={`symptom-${i}`} className="prescription-symptom">{line}</div>
+                          );
+                        }
+                        // Handle list items (remedies or medications)
+                        else if (line.trim().length > 0 && (line.match(/^\d+\s+/) || line.match(/^\d+\./) || currentSection)) {
+                          // Strip leading numbers and add to current section
+                          const cleanedLine = line.replace(/^\d+[\s\.]+/, '').trim();
+                          if (cleanedLine) {
+                            sectionItems.push(
+                              <li key={`item-${itemCounter++}`} 
+                                  className={`prescription-item ${currentSection === "remedies" ? "remedy" : "medication"}`}>
+                                {cleanedLine}
+                              </li>
+                            );
+                          }
+                        }
+                        // Regular lines
+                        else if (line.trim().length > 0) {
+                          // If not part of a list, add as a paragraph
+                          result.push(
+                            <p key={`text-${i}`} className="prescription-line">{line}</p>
+                          );
+                        }
+                        else {
+                          // Add spacer for empty lines
+                          result.push(
+                            <div key={`spacer-${i}`} className="prescription-spacer"></div>
+                          );
+                        }
+                      });
+                      
+                      // Add any remaining section items
+                      if (sectionItems.length > 0) {
+                        result.push(
+                          <ul key="final-items" className="prescription-items-list">
+                            {sectionItems}
+                          </ul>
+                        );
+                      }
+                      
+                      return result;
+                    })()}
+                  </div>
+                  <div className="prescription-footer">
+                    <p>Please consult with a healthcare professional for medical advice.</p>
+                    {message.text.includes("Here are some remedies") && (
+                      <div className="prescription-actions">
+                        <Prescription 
+                          symptoms={currentSymptom} 
+                          remedies={currentRemedies} 
+                          medications={currentMedication} 
+                        />
+                        <button 
+                          className="send-to-asha"
+                          onClick={async () => {
+                            try {
+                              const prescriptionData = {
+                                userId: sessionStorage.getItem('userId'),
+                                username: sessionStorage.getItem('username'),
+                                symptoms: currentSymptom,
+                                remedies: currentRemedies,
+                                medications: currentMedication
+                              };
+                              const success = await sendToAshaWorker(prescriptionData);
+                              if (success) {
+                                alert('Prescription sent to Asha worker successfully!');
+                              } else {
+                                alert('Failed to send prescription. Please try again.');
+                              }
+                            } catch (error) {
+                              console.error('Error sending prescription:', error);
+                              alert('Failed to send prescription. Please try again.');
+                            }
+                          }}
+                        >
+                          <span role="img" aria-label="send">📤</span> Send to Asha
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                // Regular message formatting for non-prescription messages
+                message.text.split('\n').map((line, i) => (
+                  <p key={i} className="message-line">{line}</p>
+                ))
+              )}
+            </div>
+            <div className="message-time">{message.time}</div>
+          </div>
+        ))}
+        
+        {isTyping && (
+          <div className="typing-indicator">
+            <span className="typing-dot"></span>
+            <span className="typing-dot"></span>
+            <span className="typing-dot"></span>
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} tabIndex="-1" />
+      </div>
+    </div>
+    
+    <form onSubmit={handleSubmit} className="input-form">
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder={languages[language].placeholder}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          aria-label={languages[language].placeholder}
+          className="input"
+          disabled={isTyping}
+        />
+        <button 
+          type="submit" 
+          className="send-button" 
+          aria-label="Send message"
+          disabled={isTyping || input.trim() === ""}
+        >
+          <Send size={20} className="icon" />
+          <span className="sr-only">Send</span>
+        </button>
+      </div>
+    </form>
+    
+    {prescriptionEnable && 
+      <div>
+        <Prescription symptoms={currentSymptom} remedies={currentRemedies} medications={currentMedication} />
+      </div>
+    }
+    
+    <div style={{ marginTop: "20px" }}>
+      {currentSymptom && <VideoRecommendations symptom={currentSymptom} />}
+    </div>
+  </>
+);
+
 };
 
 export default MEDICONNECTChatbot;

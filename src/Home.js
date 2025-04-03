@@ -12,19 +12,19 @@ function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
   const testimonials = [
     { quote: "MediConnect helped my grandmother get specialist consultation without traveling 100km to the city. The doctor diagnosed her condition through video call and prescribed medication that was delivered to our doorstep.",
-      author: "Rajesh Kumar",
+      author: "Shruti Chavre",
       role: "Villager, Madhya Pradesh"
     },
     { quote: "As an ASHA worker, this platform has made my job significantly easier. I can now connect villagers with doctors instantly and maintain digital health records for everyone.",
-      author: "Lakshmi Devi",
+      author: "Tanisha Paras",
       role: "ASHA Worker, Tamil Nadu"
     },
     { quote: "The AI chatbot quickly identified my symptoms as potential dengue fever and arranged an immediate video consultation with a doctor. This prompt action probably saved my life.",
-      author: "Amit Singh",
+      author: "Aniket Mhatre",
       role: "Farmer, Uttar Pradesh"
     },
     { quote: "Being able to speak to the AI in my native language made all the difference. I could explain my symptoms properly and get the right medical advice.",
-      author: "Sarita Patel",
+      author: "Dipti Raut",
       role: "Homemaker, Gujarat"
     }
   ];
@@ -65,18 +65,9 @@ function Home() {
                 multilingual support, and a network of dedicated healthcare professionals.
               </p>
               <div className="hero-stats">
-                <div className="stat-item">
-                  <span className="stat-number">200+</span>
-                  <span className="stat-label">Villages Connected</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">24/7</span>
-                  <span className="stat-label">Service Availability</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">5000+</span>
-                  <span className="stat-label">Patients Served</span>
-                </div>
+                
+                
+               
               </div>
               <div className="hero-cta">
                 <Link to="/about">
